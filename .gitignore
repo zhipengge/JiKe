@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+
+# Xcode 用户态数据
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# 构建产物
+build/
+DerivedData/
+.release-derived/
+dist/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# 逻辑测试临时产物
+LogicTests/.build/
+
+# 凭据 / 证书（切勿提交）
+.env
+.env.*
+*.p12
+*.pem
+*.key
+*.mobileprovision
+*.cer
+.notarytool*
