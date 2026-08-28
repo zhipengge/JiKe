@@ -67,7 +67,8 @@ struct AppConfig: Codable, Equatable {
     var monitor: MonitorPreference = .mouse
     var openNewTabInCWD: Bool = true
     var shellPath: String = ""
-    var loginShell: Bool = false
+    /// macOS 默认开：系统「终端」也是登录 Shell，才能读到 Homebrew 写进 `~/.zprofile` 的 PATH。
+    var loginShell: Bool = true
     var startupScriptPath: String = ""
     var quickOpenEnabled: Bool = false
     var quickOpenCommandLine: String = "open '%(file_path)s'"

@@ -135,6 +135,7 @@ final class EmbeddedTerminalView: TerminalView, TerminalViewDelegate, LocalProce
             localeIdentifier: Locale.current.identifier,
             processLANG: ProcessInfo.processInfo.environment["LANG"]
         )
+        environment["PATH"] = UserPath.resolved(current: environment["PATH"])
         let envList = environment.map { "\($0.key)=\($0.value)" }
         restarting = true
         process.startProcess(executable: launch.executable, args: launch.args, environment: envList, execName: launch.execName)

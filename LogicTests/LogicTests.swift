@@ -251,7 +251,10 @@ struct LogicTests {
             return accel.carbonModifiers & 256 != 0
         }
         let homeLaunch = ShellLaunch.arguments(shellPath: "/bin/zsh", login: true, workingDirectory: nil)
-        check("无 cwd 时登录 shell 用 -l") { homeLaunch.args == ["-l"] && homeLaunch.execName == "-zsh" }
+        check("无 cwd 时登录 shell 用 -l -i") { homeLaunch.args == ["-l", "-i"] && homeLaunch.execName == "-zsh" }
+        check("非登录也强制交互式，才会读 zshrc") {
+            ShellLaunch.arguments(shellPath: "/bin/zsh", login: false, workingDirectory: nil).args == ["-i"]
+        }
         let quoted = ShellQuote.single("/tmp/it's")
         check("单引号转义") { quoted == "'/tmp/it'\\''s'" }
         let cwdLaunch = ShellLaunch.arguments(shellPath: "/bin/zsh", login: true, workingDirectory: "/tmp/project")
@@ -259,7 +262,7 @@ struct LogicTests {
             cwdLaunch.args.count == 2
                 && cwdLaunch.args[0] == "-c"
                 && cwdLaunch.args[1].contains("cd '/tmp/project'")
-                && cwdLaunch.args[1].contains("exec '/bin/zsh' -l")
+                && cwdLaunch.args[1].contains("exec '/bin/zsh' '-l' '-i'")
         }
         check("快捷键目录含新建/关闭/最大化") {
             let ids = Set(GuakeKeybindings.catalog.map(\.id))
@@ -372,7 +375,7 @@ struct LogicTests {
                 $0.copyOnSelect = true
                 $0.playBell = true
                 $0.optionAsMeta = true
-                $0.loginShell = true
+                $0.loginShell = false
                 $0.openNewTabInCWD = false
                 $0.launchAtLogin = true
                 $0.showDockIcon = true
@@ -385,7 +388,7 @@ struct LogicTests {
                 && loaded.copyOnSelect
                 && loaded.playBell
                 && loaded.optionAsMeta
-                && loaded.loginShell
+                && loaded.loginShell == false
                 && loaded.openNewTabInCWD == false
                 && loaded.launchAtLogin
                 && loaded.showDockIcon
@@ -491,6 +494,40 @@ struct LogicTests {
                 processLANG: "zh_CN.GBK"
             )
             return TerminalProcessEnvironment.isUTF8(env["LANG"])
+        }
+        check("默认作为登录 Shell，才能读到 Homebrew 的 zprofile") { AppConfig().loginShell }
+        check("PATH 把已存在的 Homebrew 放在系统路径前面") {
+            let path = UserPath.resolved(
+                current: "/usr/bin:/bin",
+                home: "/Users/demo",
+                extraDirectories: ["/opt/homebrew/bin", "/opt/missing/bin"],
+                fileExists: { $0 == "/opt/homebrew/bin" || $0 == "/Users/demo/.local/bin" },
+                contentsOf: { $0 == "/etc/paths" ? "/usr/bin\n/bin\n/usr/sbin\n/sbin\n" : nil },
+                directoryListing: { _ in [] }
+            )
+            let parts = path.split(separator: ":").map(String.init)
+            return parts.first == "/opt/homebrew/bin"
+                && parts.contains("/usr/bin")
+                && parts.contains("/Users/demo/.local/bin")
+                && !parts.contains("/opt/missing/bin")
+        }
+        check("PATH 会读 paths.d 且去重") {
+            let path = UserPath.resolved(
+                current: "/usr/bin",
+                home: "/tmp",
+                extraDirectories: [],
+                fileExists: { _ in false },
+                contentsOf: {
+                    switch $0 {
+                    case "/etc/paths": return "/usr/bin\n/bin\n"
+                    case "/etc/paths.d/homebrew": return "/opt/homebrew/bin\n"
+                    default: return nil
+                    }
+                },
+                directoryListing: { $0 == "/etc/paths.d" ? ["homebrew"] : [] }
+            )
+            let parts = path.split(separator: ":").map(String.init)
+            return parts == ["/usr/bin", "/bin", "/opt/homebrew/bin"]
         }
 
         print()

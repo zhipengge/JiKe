@@ -292,7 +292,10 @@ struct BehaviorSettingsView: View {
             }
             Section("终端进程") {
                 TextField("Shell 路径（空则用 $SHELL）", text: $state.config.shellPath)
-                Toggle("作为登录 Shell 启动（Guake 默认为关）", isOn: $state.config.loginShell)
+                Toggle("作为登录 Shell 启动", isOn: $state.config.loginShell)
+                Text("读取 ~/.zprofile / ~/.zlogin。Homebrew、conda 等 PATH 写在这里。从访达打开的 App 本身没有这些路径，建议保持开启。Linux Guake 默认关闭。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 Toggle("在当前工作目录开新标签", isOn: $state.config.openNewTabInCWD)
                 Toggle("无限回滚", isOn: $state.config.infiniteScrollback)
                 Stepper(value: $state.config.scrollbackLines, in: 200...100000, step: 200) {
@@ -420,7 +423,7 @@ struct AboutView: View {
             Text("macOS 下拉终端。配色、快捷键与命令对齐 Guake：按 \(GuakeKeybindings.showHide.displayName) 呼出，再按一次收起。")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            Text("版本 1.0")
+            Text("版本 \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0")")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             HStack {

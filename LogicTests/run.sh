@@ -19,6 +19,7 @@ swiftc -parse-as-library -O -sdk "$SDKROOT" -o "$OUT" \
   "$ROOT/Shared/AppConfig.swift" \
   "$ROOT/Shared/SessionStore.swift" \
   "$ROOT/Shared/ShellLaunch.swift" \
+  "$ROOT/Shared/UserPath.swift" \
   "$ROOT/Shared/MacPasteInsertion.swift" \
   "$ROOT/Shared/TerminalAppearance.swift" \
   "$ROOT/LogicTests/LogicTests.swift"
