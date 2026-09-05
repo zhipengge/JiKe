@@ -8,7 +8,7 @@ struct KeybindingsSettingsView: View {
         Form {
             Section("全局（即使终端没收起也能用）") {
                 HotkeyRow(title: "呼出 / 收起", gtk: globalHotkeyBinding)
-                Text("默认 F12。笔记本请按 Fn+F12。系统「显示桌面」若占用 F11，最大化请用 Ctrl+Cmd+F。")
+                Text("默认 F12。笔记本请按 Fn+F12，也可以按 Cmd+F12。终端显示时按 Fn+F11 最大化（也可 Cmd+F11）。若仍无效，到「系统设置 → 键盘 → 键盘快捷键 → 调度中心」关掉「显示桌面」的 F11。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -23,7 +23,7 @@ struct KeybindingsSettingsView: View {
                 ForEach(Array(GuakeKeybindings.macOSExtras.enumerated()), id: \.offset) { _, extra in
                     LabeledContent(extra.title, value: GtkAccelerator(gtk: extra.gtk).displayName)
                 }
-                Text("Guake 原键 Ctrl+Shift+T / Ctrl+Shift+W / F11 仍然有效。F11 常被系统占用，所以加了这些 Mac 常用键。Cmd+C 只在有选区时拷贝，不会清空剪贴板。")
+                Text("Guake 原键 Ctrl+Shift+T / Ctrl+Shift+W 仍然有效。Cmd+D 新建标签；Fn+F11 最大化。Cmd+C 只在有选区时拷贝，不会清空剪贴板。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 LabeledContent("关闭当前标签 / 分屏", value: "Ctrl+D 或 exit")

@@ -15,7 +15,12 @@ struct GtkAccelerator: Codable, Equatable {
 
     var displayName: String {
         if isUnbound { return "未绑定" }
-        if gtk == "F12" { return "Fn+F12" }
+        if parsed.carbon == 0,
+           parsed.name.count >= 2,
+           parsed.name.first == "F",
+           parsed.name.dropFirst().allSatisfy(\.isNumber) {
+            return "Fn+\(parsed.name)"
+        }
         return parsed.label
     }
 
@@ -188,7 +193,10 @@ enum GuakeKeybindings {
     /// macOS 上 Guake 原键容易撞系统（F11 是显示桌面），这些额外键始终可用。
     static let macOSExtras: [MacOSExtraBinding] = [
         MacOSExtraBinding(id: "new-tab", gtk: "<Super>n", title: "新建标签"),
+        MacOSExtraBinding(id: "new-tab", gtk: "<Super>d", title: "新建标签"),
         MacOSExtraBinding(id: "close-tab", gtk: "<Super>w", title: "关闭标签"),
+        MacOSExtraBinding(id: "toggle-fullscreen", gtk: "F11", title: "最大化 / 全屏"),
+        MacOSExtraBinding(id: "toggle-fullscreen", gtk: "<Super>F11", title: "最大化 / 全屏"),
         MacOSExtraBinding(id: "toggle-fullscreen", gtk: "<Control><Super>f", title: "最大化 / 全屏"),
         MacOSExtraBinding(id: "toggle-fullscreen", gtk: "<Super>Return", title: "最大化 / 全屏"),
         MacOSExtraBinding(id: "clipboard-copy", gtk: "<Super>c", title: "拷贝选中文本"),

@@ -23,6 +23,15 @@ final class KeybindMonitor {
         let flags = UInt(event.modifierFlags.rawValue)
         let key = event.keyCode
 
+        if isMaximizeKey(keyCode: key, nsModifiers: flags) {
+            AppState.shared.maximizeFromGlobalHotkey()
+            return true
+        }
+        if isShowHideKey(keyCode: key, nsModifiers: flags) {
+            AppState.shared.toggleDropDown()
+            return true
+        }
+
         for extra in GuakeKeybindings.macOSExtras where extra.id == "open-settings" {
             if GuakeKeybindings.match(keyCode: key, nsModifiers: flags, against: extra.gtk) {
                 return perform(extra.id)
@@ -51,6 +60,25 @@ final class KeybindMonitor {
             return true
         }
         return false
+    }
+
+    private func isMaximizeKey(keyCode: UInt16, nsModifiers: UInt) -> Bool {
+        guard keyCode == UInt16(kVK_F11) else { return false }
+        let mods = nsModifiers & GtkAccelerator.nsMatchingMask
+        return mods == 0 || mods == GtkAccelerator.nsCommand
+    }
+
+    /// 配置的呼出键，以及 Cmd+F12（有人按这个而不是 Fn+F12）。
+    private func isShowHideKey(keyCode: UInt16, nsModifiers: UInt) -> Bool {
+        let configured = AppState.shared.config.hotkey
+        if GuakeKeybindings.match(keyCode: keyCode, nsModifiers: nsModifiers, against: configured.gtk) {
+            return true
+        }
+        return GuakeKeybindings.match(
+            keyCode: keyCode,
+            nsModifiers: nsModifiers,
+            against: HotkeyManager.toggleAlias.gtk
+        )
     }
 
     @discardableResult

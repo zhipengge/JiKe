@@ -70,6 +70,8 @@ final class AppState: ObservableObject {
     @Published var findVisible = false
 
     @Published var isFullscreen = false
+    private var lastFullscreenChangeAt: TimeInterval = 0
+    private var lastToggleAt: TimeInterval = 0
 
     let sessions = TerminalSessionCache.shared
 
@@ -181,7 +183,10 @@ final class AppState: ObservableObject {
     }
 
     func toggleDropDown() {
-        if isDropDownVisible {
+        let now = ProcessInfo.processInfo.systemUptime
+        if now - lastToggleAt < 0.2 { return }
+        lastToggleAt = now
+        if DropDownWindowController.shared.isOnScreen {
             hideDropDown()
         } else {
             showDropDown()
@@ -297,8 +302,25 @@ final class AppState: ObservableObject {
     }
 
     func toggleFullscreen() {
+        let now = ProcessInfo.processInfo.systemUptime
+        if now - lastFullscreenChangeAt < 0.2 { return }
+        lastFullscreenChangeAt = now
         isFullscreen.toggle()
         DropDownWindowController.shared.updateFrameForConfig()
+    }
+
+    /// Fn+F11：终端没收起时先滑出再最大化；已显示则切换最大化。
+    func maximizeFromGlobalHotkey() {
+        if !DropDownWindowController.shared.isOnScreen {
+            let now = ProcessInfo.processInfo.systemUptime
+            if now - lastFullscreenChangeAt < 0.2 { return }
+            lastFullscreenChangeAt = now
+            isFullscreen = true
+            showDropDown()
+            DropDownWindowController.shared.updateFrameForConfig()
+            return
+        }
+        toggleFullscreen()
     }
 
     func searchOnWeb() {

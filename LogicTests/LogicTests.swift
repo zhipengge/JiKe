@@ -242,6 +242,12 @@ struct LogicTests {
         print("== 11. 快捷键与启动命令 ==")
         check("默认热键显示 Fn+F12") { GuakeKeybindings.showHide.displayName == "Fn+F12" }
         check("F12 键码 0x6F") { GuakeKeybindings.showHide.keyCode == 0x6F && GuakeKeybindings.showHide.carbonModifiers == 0 }
+        check("Cmd+F12 能匹配呼出备选") {
+            let accel = GtkAccelerator(gtk: "<Super>F12")
+            return accel.keyCode == 0x6F && accel.carbonModifiers & 256 != 0
+                && accel.displayName == "Cmd+F12"
+                && GuakeKeybindings.match(keyCode: 0x6F, nsModifiers: GtkAccelerator.nsCommand, against: "<Super>F12")
+        }
         check("Ctrl+Shift+T 新建标签") {
             let accel = GtkAccelerator(gtk: GuakeKeybindings.localDefaults["new-tab"]!)
             return accel.keyName == "T" && accel.carbonModifiers & 4096 != 0 && accel.carbonModifiers & 512 != 0
@@ -275,6 +281,17 @@ struct LogicTests {
         }
         check("Cmd+W 额外键关闭标签") {
             GuakeKeybindings.macOSExtras.contains { $0.id == "close-tab" && $0.gtk == "<Super>w" }
+        }
+        check("Cmd+D 额外键新建标签") {
+            GuakeKeybindings.macOSExtras.contains { $0.id == "new-tab" && $0.gtk == "<Super>d" }
+        }
+        check("F11 显示 Fn+F11") { GtkAccelerator(gtk: "F11").displayName == "Fn+F11" }
+        check("F11 键码 0x67") { GtkAccelerator(gtk: "F11").keyCode == 0x67 && GtkAccelerator(gtk: "F11").carbonModifiers == 0 }
+        check("F11 带 Fn 修饰位仍匹配最大化") {
+            GuakeKeybindings.match(keyCode: 0x67, nsModifiers: 1 << 23, against: "F11")
+        }
+        check("F11 额外键最大化") {
+            GuakeKeybindings.macOSExtras.contains { $0.id == "toggle-fullscreen" && $0.gtk == "F11" }
         }
         check("Cmd+C / Cmd+V / Cmd+F 是 macOS 额外键") {
             let ids = Set(GuakeKeybindings.macOSExtras.map(\.id))

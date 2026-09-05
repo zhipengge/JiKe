@@ -23,7 +23,7 @@ struct JiKeApp: App {
                     AppState.shared.newTab(home: false)
                     AppState.shared.showDropDown()
                 }
-                .keyboardShortcut("t", modifiers: [.control, .shift])
+                .keyboardShortcut("d", modifiers: .command)
                 Button("在主目录新建标签") {
                     AppState.shared.newTab(home: true)
                     AppState.shared.showDropDown()
@@ -48,15 +48,23 @@ struct JiKeApp: App {
                     AppState.shared.selectTab(offset: 1)
                 }
             }
-            CommandMenu("窗口") {
+            CommandGroup(after: .windowArrangement) {
+                Divider()
                 Button("显示 / 隐藏终端") {
-                    AppState.shared.toggleDropDown()
+                    if DropDownWindowController.shared.isOnScreen {
+                        AppState.shared.hideDropDown()
+                    } else {
+                        AppState.shared.showDropDown()
+                    }
                 }
                 Button("最大化 / 全屏") {
-                    AppState.shared.showDropDown()
-                    AppState.shared.toggleFullscreen()
+                    AppState.shared.maximizeFromGlobalHotkey()
                 }
                 .keyboardShortcut("f", modifiers: [.control, .command])
+                Button("最大化 / 全屏") {
+                    AppState.shared.maximizeFromGlobalHotkey()
+                }
+                .keyboardShortcut(KeyEquivalent(Character(UnicodeScalar(NSF11FunctionKey)!)), modifiers: [])
                 Button("在访达中打开当前目录") {
                     AppState.shared.revealCWDInFinder()
                 }
@@ -72,9 +80,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Prefs.applyActivationPolicy()
         DropDownWindowController.shared.configure()
         StatusItemController.shared.refresh()
-        HotkeyManager.shared.onPressed = {
+        HotkeyManager.shared.onToggle = {
             Task { @MainActor in
                 AppState.shared.toggleDropDown()
+            }
+        }
+        HotkeyManager.shared.onMaximize = {
+            Task { @MainActor in
+                AppState.shared.maximizeFromGlobalHotkey()
             }
         }
         HotkeyManager.shared.register(AppState.shared.config.hotkey)
@@ -97,7 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
-        guard AppState.shared.isDropDownVisible, !Prefs.settingsOpen, !AppState.shared.findVisible else { return }
+        guard DropDownWindowController.shared.isOnScreen, !Prefs.settingsOpen, !AppState.shared.findVisible else { return }
         DropDownWindowController.shared.focusTerminal()
     }
 

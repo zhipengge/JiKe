@@ -65,7 +65,7 @@ struct GeneralSettingsView: View {
                     Text(state.config.hotkey.displayName)
                         .font(.body.monospaced())
                 }
-                Text("默认与 Guake 相同：F12。笔记本请按 Fn+F12。若被系统占用，到「系统设置 → 键盘 → 键盘快捷键」关掉冲突项。")
+                Text("默认与 Guake 相同：F12。笔记本请按 Fn+F12，也可以按 Cmd+F12。若被系统占用，到「系统设置 → 键盘 → 键盘快捷键」关掉冲突项。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Toggle("登录时启动", isOn: $state.config.launchAtLogin)
@@ -281,6 +281,9 @@ struct BehaviorSettingsView: View {
         Form {
             Section("交互") {
                 Toggle("始终置顶", isOn: $state.config.stayOnTop)
+                Text("开启后终端会盖在其它 App 上面。关闭则和其他普通窗口一样叠放。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 Toggle("失去焦点时隐藏", isOn: $state.config.hideOnLoseFocus)
                 Toggle("选中即复制", isOn: $state.config.copyOnSelect)
                 Toggle("响铃", isOn: $state.config.playBell)

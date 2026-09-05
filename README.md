@@ -69,10 +69,10 @@ rm ~/Library/Preferences/com.gezhipeng0201.JiKe.plist
 
 | 操作 | 按键 |
 |---|---|
-| 呼出 / 收起 | F12（笔记本 Fn+F12） |
-| 新建标签 | Ctrl+Shift+T 或 Cmd+N |
+| 呼出 / 收起 | F12（笔记本 Fn+F12，也可用 Cmd+F12） |
+| 新建标签 | Cmd+D、Ctrl+Shift+T 或 Cmd+N |
 | 关闭标签 | Ctrl+Shift+W、Cmd+W，或空提示符下 Ctrl+D |
-| 最大化 | Ctrl+Cmd+F 或 Cmd+Return |
+| 最大化 | Fn+F11、Ctrl+Cmd+F 或 Cmd+Return |
 | 拷贝 / 粘贴 | Cmd+C / Cmd+V（也可用 Ctrl+Shift+C / V） |
 | 查找 | Cmd+F |
 | 设置 | 标签栏齿轮，或 Cmd+, |

@@ -1,9 +1,13 @@
 import AppKit
 
 @MainActor
-final class StatusItemController {
+final class StatusItemController: NSObject, NSMenuDelegate {
     static let shared = StatusItemController()
     private var item: NSStatusItem?
+
+    var isMenuVisible: Bool {
+        item?.menu?.supermenu != nil || item?.button?.isHighlighted == true
+    }
 
     func refresh() {
         if AppState.shared.config.showMenuBarIcon {
@@ -30,15 +34,16 @@ final class StatusItemController {
 
     private func buildMenu() -> NSMenu {
         let menu = NSMenu()
+        menu.delegate = self
         let toggle = NSMenuItem(
-            title: AppState.shared.isDropDownVisible ? "隐藏终端" : "显示终端",
+            title: DropDownWindowController.shared.isOnScreen ? "隐藏终端" : "显示终端",
             action: #selector(Handlers.toggle),
             keyEquivalent: ""
         )
         toggle.target = Handlers.shared
         menu.addItem(toggle)
 
-        let newTab = NSMenuItem(title: "新建标签", action: #selector(Handlers.newTab), keyEquivalent: "n")
+        let newTab = NSMenuItem(title: "新建标签", action: #selector(Handlers.newTab), keyEquivalent: "d")
         newTab.target = Handlers.shared
         menu.addItem(newTab)
 
@@ -68,11 +73,21 @@ final class StatusItemController {
         return menu
     }
 
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.item(at: 0)?.title = DropDownWindowController.shared.isOnScreen ? "隐藏终端" : "显示终端"
+    }
+
     final class Handlers: NSObject {
         static let shared = Handlers()
 
         @objc func toggle() {
-            Task { @MainActor in AppState.shared.toggleDropDown() }
+            Task { @MainActor in
+                if DropDownWindowController.shared.isOnScreen {
+                    AppState.shared.hideDropDown()
+                } else {
+                    AppState.shared.showDropDown()
+                }
+            }
         }
 
         @objc func newTab() {
