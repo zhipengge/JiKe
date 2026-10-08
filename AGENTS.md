@@ -30,17 +30,29 @@ macOS 下拉终端。按 F12（笔记本是 Fn+F12）从屏幕边缘滑出，再
 
 ---
 
-## 当前进度（截至 2026-08-20）
+## 当前进度（截至 2026-10-09）
 
 首版功能已接上：下拉窗、F12 热键、SwiftTerm PTY、标签/分屏、Guake 快捷键、169 套配色、Quick Open、`jike://` CLI、设置页、菜单栏、登录项。逻辑测试 97 项通过。
 
+**已发布**：仓库已推到 <https://github.com/zhipengge/JiKe>（公开，README 写明开源）。
+Release 已上传 1.0.0 / 1.0.1 / 1.0.2 三版，1.0.2 是 latest。
+
 ### 待办
 
-- [ ] 本仓库首次提交并推到 GitHub（建议 `zhipengge/JiKe`）
-- [ ] Apple Developer 创建 **Developer ID Application**，配置 `notarytool` 后跑 `./Scripts/release.sh`
-- [ ] `CREATE_GITHUB_RELEASE=1 ./Scripts/release.sh x.y.z` 上传首个 Release
+- [ ] **申请 Developer ID Application 证书**（见下），然后重打并重新上传公证版
 - [ ] `apps/jike/` 文档同步下载链接；GitHub Pages 亲自点开确认
 - [ ] 手工验证清单（README）真机跑一遍
+
+### 当前包的已知不足：未公证
+
+已发布的三个版本都是 **ad-hoc 签名**，`spctl` 直接拒绝，用户必须「右键 → 打开」才能启动。
+Release 说明里已如实写明。要正式分发需要 Developer ID + 公证，步骤见 `Scripts/NOTARIZE.md`。
+
+### 为什么这个仓库保持公开
+
+分发依赖 GitHub Releases，而**私有仓库的 Release 对未登录用户不可下载**——
+改成私有会让 README 里的下载链接全部 404。定位本来就是开源工具，
+所以 `zhipengge/JiKe` 是「源码一律私有」这条规则唯一的有意例外。
 
 ### 已确认：分发
 

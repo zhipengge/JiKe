@@ -105,6 +105,7 @@ if [[ -n "${SIGN_IDENTITY:-}" && -n "${NOTARY_PROFILE:-}" && "${SKIP_NOTARY:-0}"
   xcrun stapler staple "$STAGE/${APP_NAME}.app"
   xcrun stapler validate "$STAGE/${APP_NAME}.app"
   rm -f "$NOTARY_ZIP"
+  NOTARIZED=1
 elif [[ -n "${SIGN_IDENTITY:-}" ]]; then
   echo "!! 已签名但未公证（未设 NOTARY_PROFILE 或 SKIP_NOTARY=1）"
 fi
@@ -157,6 +158,13 @@ if [[ "${CREATE_GITHUB_RELEASE:-0}" == "1" ]]; then
   fi
   ASSETS=("$ZIP_OUT" "$SUM_OUT")
   [[ -f "$DMG_OUT" ]] && ASSETS+=("$DMG_OUT")
+  # 用户看到的指引要确定，不能是「通常可以」——它取决于这一版有没有真的公证
+  if [[ "${NOTARIZED:-0}" == "1" ]]; then
+    OPEN_HINT="直接双击打开即可（已 Developer ID 签名并通过公证）"
+  else
+    OPEN_HINT="右键 App → 打开。**这一版是 ad-hoc 签名、未公证**，双击会被系统拦下"
+  fi
+
   NOTES="$(cat <<EOF
 ## 即刻 ${VERSION}
 
@@ -166,7 +174,7 @@ macOS 14.0+ 下拉终端。不走 Mac App Store（无沙盒，完整本地 Shell
 
 1. 下载 \`JiKe-${VERSION}.zip\`（或 dmg）
 2. 解压，将「即刻」拖入「应用程序」
-3. 首次启动：右键 App → 打开（若已公证且 Developer ID 签名，通常可直接打开）
+3. ${OPEN_HINT}
 
 ### 校验
 
