@@ -39,14 +39,27 @@ Release 已上传 1.0.0 / 1.0.1 / 1.0.2 三版，1.0.2 是 latest。
 
 ### 待办
 
-- [ ] **申请 Developer ID Application 证书**（见下），然后重打并重新上传公证版
 - [ ] `apps/jike/` 文档同步下载链接；GitHub Pages 亲自点开确认
 - [ ] 手工验证清单（README）真机跑一遍
 
-### 当前包的已知不足：未公证
+### 签名与公证：已完成（1.0.3 起）
 
-已发布的三个版本都是 **ad-hoc 签名**，`spctl` 直接拒绝，用户必须「右键 → 打开」才能启动。
-Release 说明里已如实写明。要正式分发需要 Developer ID + 公证，步骤见 `Scripts/NOTARIZE.md`。
+`v1.0.3` 起是 **Developer ID 签名 + 公证 + staple** 的正式包，用户双击即可打开。
+验证过：`spctl -a -t exec` 返回 `accepted, source=Notarized Developer ID`。
+
+证书：`Developer ID Application: Zhipeng Ge (7252W54VUU)`
+公证凭据：钥匙串 profile `AC_PASSWORD`
+
+打正式包：
+
+```bash
+NOTARY_PROFILE="AC_PASSWORD" ./Scripts/release.sh x.y.z
+CREATE_GITHUB_RELEASE=1 NOTARY_PROFILE="AC_PASSWORD" ./Scripts/release.sh x.y.z   # 顺带传 Release
+```
+
+完整步骤与排错见 `Scripts/NOTARIZE.md`。**1.0.3 之前的版本是 ad-hoc 签名**，需要右键打开。
+
+发布说明里的安装指引由脚本按「本次是否真的公证」生成，不要手写。
 
 ### 为什么这个仓库保持公开
 

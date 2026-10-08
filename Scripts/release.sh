@@ -147,9 +147,10 @@ echo "  $ZIP_OUT"
 echo "  $SUM_OUT"
 echo "  $APP_OUT"
 echo
-echo "上传 GitHub Release 示例:"
-echo "  gh release create v${VERSION} -R ${GITHUB_REPO} -t \"即刻 ${VERSION}\" -n \"macOS 14+。解压后拖入应用程序。首次请右键打开。\" \\"
-echo "    \"${ZIP_OUT}\" \"$([ -f "$DMG_OUT" ] && echo "$DMG_OUT")\" \"${SUM_OUT}\""
+echo "上传 GitHub Release:"
+echo "  推荐带上 CREATE_GITHUB_RELEASE=1 重跑，说明文字由脚本按公证状态生成，别手写："
+echo "    CREATE_GITHUB_RELEASE=1 NOTARY_PROFILE=\"${NOTARY_PROFILE:-AC_PASSWORD}\" ./Scripts/release.sh ${VERSION}"
+echo "  只想手动传已打好的包，用上一步生成的那份说明："
 
 if [[ "${CREATE_GITHUB_RELEASE:-0}" == "1" ]]; then
   if ! command -v gh >/dev/null 2>&1; then
