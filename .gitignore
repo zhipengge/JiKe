@@ -34,3 +34,4 @@ LogicTests/.build/
 *.mobileprovision
 *.cer
 .notarytool*
+.archive/
